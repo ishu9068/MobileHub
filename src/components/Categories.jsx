@@ -91,7 +91,7 @@ const Categories = ({ theme }) => {
                 <div className="row">
                   {filteredProducts.length > 0 ? (
                     filteredProducts.map((p) => (
-                      <div className="col-md-3 col-6" key={p._id}>
+                      <div className="col-md-3 col-6 mb-3" key={p._id}>
                         <div
                           className={`p-2 rounded ${
                             theme === "dark"
@@ -163,11 +163,11 @@ const Categories = ({ theme }) => {
                 <div className="row">
                   {modalProducts.map((p) => (
                     <div
-                      className="col-md-3 col-sm-6 mb-3"
+                      className="col-md-3 col-sm-6 m-3"
                       key={p._id}
                     >
                       <div
-                        className="card h-100 p-2 shadow-sm"
+                        className="card h-100 p-2 shadow-sm mb-3"
                         style={{ cursor: "pointer" }}
                         onClick={() => {
                           setSelectedProduct(p);

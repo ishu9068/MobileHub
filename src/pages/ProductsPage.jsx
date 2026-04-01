@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/SidebarBS";
 import ProductsContainer from "../components/ProductsContainer";
 import api from "../api/axios";
+import Footer from "../components/Footer";
 
 const ProductsPage = ({ theme, setTheme, user }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [cartItems, setCartItems] = useState([]);
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const sidebarRef = useRef();
 
   const isDark = theme === "dark";
 
-  // ✅ FETCH CART (FIXED 🔥)
+  // ✅ FETCH CART
   const fetchCart = async () => {
     try {
       const { data } = await api.get("/cart");
-
-      // 🔥 IMPORTANT FIX (array ensure)
       setCartItems(data.cart || data || []);
     } catch (err) {
       console.log(err);
@@ -24,10 +26,40 @@ const ProductsPage = ({ theme, setTheme, user }) => {
   };
 
   useEffect(() => {
-    fetchCart();
+    const loadCart = async () => {
+      try {
+        const { data } = await api.get("/cart");
+        setCartItems(data.cart || data || []);
+      } catch (err) {
+        console.log(err);
+        setCartItems([]);
+      }
+    };
+
+    loadCart();
   }, []);
 
-  // ✅ UPDATE QTY (FIXED 🔥 productId → cartId mapping)
+  // ✅ OUTSIDE CLICK CLOSE SIDEBAR
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(e.target)
+      ) {
+        setShowSidebar(false);
+      }
+    };
+
+    if (showSidebar) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSidebar]);
+
+  // ✅ UPDATE QTY
   const updateQuantity = async (productId, qty) => {
     if (qty < 1) return;
 
@@ -39,7 +71,6 @@ const ProductsPage = ({ theme, setTheme, user }) => {
       if (!item) return;
 
       await api.put(`/cart/${item._id}`, { quantity: qty });
-
       fetchCart();
     } catch (err) {
       console.log(err);
@@ -60,9 +91,8 @@ const ProductsPage = ({ theme, setTheme, user }) => {
     <div
       style={{
         backgroundColor: isDark ? "#121212" : "#f5f5f5",
-        height: "100vh",
+        minHeight: "100vh",
         color: isDark ? "#f5f5f5" : "#121212",
-        overflow: "hidden",
       }}
     >
       {/* NAVBAR */}
@@ -70,38 +100,69 @@ const ProductsPage = ({ theme, setTheme, user }) => {
         <Navbar theme={theme} setTheme={setTheme} user={user} />
       </div>
 
-      <div
-        className="container-fluid"
-        style={{
-          marginTop: "70px",
-          height: "calc(100vh - 70px)",
-        }}
-      >
-        <div className="row h-100">
+      {/* MOBILE CATEGORY BUTTON */}
+      <div className="d-md-none p-2" style={{ marginTop: "70px" }}>
+        <button
+          className="btn btn-primary w-100"
+          onClick={() => setShowSidebar(true)}
+        >
+          ☰ Categories
+        </button>
+      </div>
 
-          {/* SIDEBAR */}
+      <div className="container-fluid">
+        <div className="row">
+
+          {/* 🔥 SIDEBAR */}
           <div
-            className="col-md-3 col-lg-2"
+            ref={sidebarRef}
+            className={`${
+              showSidebar ? "d-block" : "d-none"
+            } d-md-block col-md-3 col-lg-2`}
             style={{
               position: "fixed",
               top: "70px",
               left: 0,
               height: "calc(100vh - 70px)",
+              width: "250px",
               overflowY: "auto",
               background: isDark ? "#1e1e1e" : "#fff",
+              zIndex: 999,
             }}
           >
-            <Sidebar setSelectedCategory={setSelectedCategory} />
+            <Sidebar
+              setSelectedCategory={(cat) => {
+                setSelectedCategory(cat);
+                setShowSidebar(false); // ✅ close on click
+              }}
+              closeSidebar={() => setShowSidebar(false)}
+            />
           </div>
 
-          {/* PRODUCTS */}
+          {/* 🔥 OVERLAY */}
+          {showSidebar && (
+            <div
+              className="d-md-none"
+              onClick={() => setShowSidebar(false)}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                background: "rgba(0,0,0,0.5)",
+                zIndex: 998,
+              }}
+            />
+          )}
+
+          {/* 🔥 PRODUCTS */}
           <div
-            className="col-md-9 col-lg-10"
+            className="col-12 col-md-9 col-lg-10"
             style={{
-              marginLeft: "16.66%",
-              height: "100%",
-              overflowY: "auto",
-              padding: "20px",
+              marginTop: "70px",
+              marginLeft: window.innerWidth >= 768 ? "250px" : "0",
+              padding: "15px",
             }}
           >
             <ProductsContainer
@@ -110,10 +171,12 @@ const ProductsPage = ({ theme, setTheme, user }) => {
               addToCart={addToCart}
               updateQuantity={updateQuantity}
             />
+            <Footer />
           </div>
-
+          
         </div>
       </div>
+     
     </div>
   );
 };

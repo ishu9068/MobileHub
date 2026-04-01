@@ -1,11 +1,30 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const ProductCard = ({ item, qty, addToCart, updateQuantity }) => {
+const ProductCard = ({
+  item,
+  qty = 0,
+  addToCart,
+  updateQuantity,
+  showCart = true,    
+  clickable = true,    
+}) => {
+  const navigate = useNavigate();
+
   if (!item) return null;
 
-  return (
-    <div className="card product-card h-100 shadow-sm">
+  const handleCardClick = () => {
+    if (clickable) {
+      navigate(`/product/${item._id}`);
+    }
+  };
 
+  return (
+    <div
+      className="card product-card h-100 shadow-sm"
+      style={{ cursor: clickable ? "pointer" : "default" }}
+      onClick={handleCardClick}
+    >
       {/* IMAGE */}
       <div className="text-center p-2">
         <img
@@ -25,33 +44,42 @@ const ProductCard = ({ item, qty, addToCart, updateQuantity }) => {
           ₹{item?.price}
         </p>
 
-        {/* 🔥 CART */}
-        {qty === 0 ? (
-          <button
-            className="btn btn-primary mt-auto"
-            onClick={() => addToCart(item)}
-          >
-            Add to Cart
-          </button>
-        ) : (
-          <div className="d-flex justify-content-between align-items-center mt-auto">
+        {/* 🔥 CART (OPTIONAL) */}
+        {showCart && (
+          qty === 0 ? (
             <button
-              className="btn btn-danger btn-sm"
-              onClick={() => updateQuantity(item._id, qty - 1)}
+              className="btn btn-primary mt-auto"
+              onClick={(e) => {
+                e.stopPropagation(); // 🔥 prevent navigation
+                addToCart(item);
+              }}
             >
-              -
+              Add to Cart
             </button>
-
-            <span className="fw-bold">{qty}</span>
-
-            <button
-              className="btn btn-success btn-sm"
-              onClick={() => updateQuantity(item._id, qty + 1)}
+          ) : (
+            <div
+              className="d-flex justify-content-between align-items-center mt-auto"
+              onClick={(e) => e.stopPropagation()} // 🔥 prevent navigation
             >
-              +
-            </button>
-          </div>
+              <button
+                className="btn btn-danger btn-sm"
+                onClick={() => updateQuantity(item._id, qty - 1)}
+              >
+                -
+              </button>
+
+              <span className="fw-bold">{qty}</span>
+
+              <button
+                className="btn btn-success btn-sm"
+                onClick={() => updateQuantity(item._id, qty + 1)}
+              >
+                +
+              </button>
+            </div>
+          )
         )}
+
       </div>
     </div>
   );

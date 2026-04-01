@@ -7,18 +7,17 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./utils/ProtectedRoute";
 import RoleBasedRoute from "./utils/RoleBasedRoute";
-
 import ProductsPage from "./pages/ProductsPage";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Error from "./error/Error";
 import Cart from "./components/Cart";
+import ProductDetails from "./components/ProductDetails";
 
 import { ThemeProvider } from "./context/ThemeContext";
 import { getUser } from "./utils/auth";
 
 function App() {
-  const [theme, setTheme] = useState("light");
 
   // 🔥 GLOBAL CART STATE
   const [cartItems, setCartItems] = useState([]);
@@ -34,8 +33,8 @@ function App() {
         cartItems.map((item) =>
           item._id === product._id
             ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
+            : item,
+        ),
       );
     } else {
       setCartItems([...cartItems, { ...product, quantity: 1 }]);
@@ -53,8 +52,8 @@ function App() {
 
     setCartItems(
       cartItems.map((item) =>
-        item._id === id ? { ...item, quantity: qty } : item
-      )
+        item._id === id ? { ...item, quantity: qty } : item,
+      ),
     );
   };
 
@@ -62,7 +61,6 @@ function App() {
     <ThemeProvider>
       <BrowserRouter>
         <Routes>
-
           {/* PUBLIC */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -70,13 +68,11 @@ function App() {
 
           {/* CUSTOMER */}
           <Route
-            path="/products"
+            path="/product"
             element={
               <ProtectedRoute>
                 <RoleBasedRoute allowedRoles={["customer"]}>
                   <ProductsPage
-                    theme={theme}
-                    setTheme={setTheme}
                     cartItems={cartItems}
                     addToCart={addToCart}
                     updateQuantity={updateQuantity}
@@ -87,13 +83,27 @@ function App() {
             }
           />
 
+          <Route
+           path="/product/:id"
+           element={
+              <ProtectedRoute>
+                <RoleBasedRoute allowedRoles={["customer"]}>
+                  <ProductDetails
+                    cartItems={cartItems}
+                    addToCart={addToCart}
+                    updateQuantity={updateQuantity}
+                    user={user}
+                  />
+                </RoleBasedRoute>
+              </ProtectedRoute>
+            } />
+          
           {/* CART */}
           <Route
             path="/cart"
             element={
               <ProtectedRoute>
                 <Cart
-                  theme={theme}
                   cartItems={cartItems}
                   onRemove={removeFromCart}
                   onQuantityChange={updateQuantity}
@@ -104,7 +114,6 @@ function App() {
 
           {/* ERROR */}
           <Route path="*" element={<Error />} />
-
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

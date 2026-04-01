@@ -4,7 +4,7 @@ const products = [
   { name: "iPhone 17", price: "₹70,000", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCiYidzt1ZgT0jLpCmQzeiNLxhhWeuyK0Amg&s" },
   { name: "Earbuds pro", price: "₹2,000", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXTyn7l4ON49Kj8b5xWRZe9frhXoq2Fzzd0w&s" },
   { name: "Power Bank", price: "₹1,200", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsoL0HNjkgkZO-DLwMptuB2BNNioS8VgD2gA&s" },
-  { name: "Speaker", price: "₹3,000", img: "https://blaupunktaudio.in/cdn/shop/files/bt03-rgb-wireless-bluetooth-speaker-blaupunkt-india-1-removebg-preview_360x.png?v=1772264725" },
+  { name: "Speaker", price: "₹3,000", img: "https://m.media-amazon.com/images/I/41B4HAx7G+L._SY300_SX300_QL70_FMwebp_.jpg" },
 ];
 
 const Products = ({ theme }) => {
@@ -27,12 +27,6 @@ const Products = ({ theme }) => {
               <div className="card-body text-center">
                 <h6>{p.name}</h6>
                 <p className="text-secondary">{p.price}</p>
-
-                <button className={`btn btn-sm ${
-                  theme === "dark" ? "btn-light" : "btn-dark"
-                }`}>
-                  Add to Cart
-                </button>
               </div>
             </div>
           </div>

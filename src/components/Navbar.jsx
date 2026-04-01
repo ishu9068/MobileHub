@@ -1,19 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import logo from "../assets/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-const Navbar = ({
-  theme,
-  setTheme,
-  goProducts,
-  goAbout,
-  goServices,
-  goContact,
-}) => {
+const Navbar = ({ theme, setTheme }) => {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const profileRef = useRef();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -21,10 +16,33 @@ const Navbar = ({
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-  //  LOGOUT FUNCTION
+  // 🔥 NAVIGATION FUNCTION (SPA SCROLL)
+  const handleNav = (section) => {
+    navigate("/", { state: { scrollTo: section } });
+    setOpen(false);
+  };
+
+  // 🔥 OUTSIDE CLICK CLOSE PROFILE
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+
+    if (profileOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [profileOpen]);
+
+  // 🔥 LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("token"); 
+    localStorage.removeItem("token");
 
     setProfileOpen(false);
     navigate("/");
@@ -37,9 +55,17 @@ const Navbar = ({
       }`}
     >
       {/* LOGO */}
-      <a className="navbar-brand" href="#">
-        <img src={logo} alt="logo" height="40" />
-      </a>
+      <div className="navbar-brand" style={{ cursor: "pointer" }}>
+        <img
+          src={logo}
+          alt="logo"
+          height="40"
+          onClick={() => {
+            navigate("/");
+            setOpen(false);
+          }}
+        />
+      </div>
 
       {/* TOGGLER */}
       <button className="navbar-toggler" onClick={() => setOpen(!open)}>
@@ -54,32 +80,59 @@ const Navbar = ({
       >
         {/* MENU */}
         <ul className="navbar-nav mx-auto nav-menu">
+
+          {/* HOME */}
           <li className="nav-item">
-            <button className="nav-link btn fw-bold" onClick={goProducts}>
+            <button
+              className="nav-link btn fw-bold"
+              onClick={() => {
+                navigate("/");
+                setOpen(false);
+              }}
+            >
               Home
             </button>
           </li>
 
+          {/* PRODUCTS */}
           <li className="nav-item">
-            <button className="nav-link btn fw-bold" onClick={goProducts}>
+            <button
+              className="nav-link btn fw-bold"
+              onClick={() => {
+                navigate("/products");
+                setOpen(false);
+              }}
+            >
               Products
             </button>
           </li>
 
+          {/* SERVICES */}
           <li className="nav-item">
-            <button className="nav-link btn fw-bold" onClick={goServices}>
+            <button
+              className="nav-link btn fw-bold"
+              onClick={() => handleNav("services")}
+            >
               Services
             </button>
           </li>
 
+          {/* ABOUT */}
           <li className="nav-item">
-            <button className="nav-link btn fw-bold" onClick={goAbout}>
+            <button
+              className="nav-link btn fw-bold"
+              onClick={() => handleNav("about")}
+            >
               About
             </button>
           </li>
 
+          {/* CONTACT */}
           <li className="nav-item">
-            <button className="nav-link btn fw-bold" onClick={goContact}>
+            <button
+              className="nav-link btn fw-bold"
+              onClick={() => handleNav("contact")}
+            >
               Contact
             </button>
           </li>
@@ -87,8 +140,9 @@ const Navbar = ({
 
         {/* RIGHT */}
         <div className="d-flex align-items-center gap-2 position-relative">
+
           {/* THEME BUTTON */}
-          {window.location.pathname === "/" && (
+          {location.pathname === "/" && (
             <button
               onClick={toggleTheme}
               className={`btn ${
@@ -99,10 +153,11 @@ const Navbar = ({
             </button>
           )}
 
-          {/* PROFILE / LOGIN */}
+          {/* PROFILE */}
           {user ? (
-            <div className="position-relative">
-              {/* PROFILE BUTTON */}
+            <div className="position-relative" ref={profileRef}>
+
+              {/* BUTTON */}
               <div
                 onClick={() => setProfileOpen(!profileOpen)}
                 className="d-flex align-items-center justify-content-center btn rounded-circle text-white btn-secondary"
@@ -116,10 +171,18 @@ const Navbar = ({
               {/* 🔥 POPUP */}
               {profileOpen && (
                 <div
-                  className={`position-absolute end-0 mt-2 p-3 rounded shadow ${
-                    theme === "dark" ? "bg-dark text-light" : "bg-white text-dark"
+                  className={`position-absolute mt-2 p-3 rounded shadow ${
+                    theme === "dark"
+                      ? "bg-dark text-light"
+                      : "bg-white text-dark"
                   }`}
-                  style={{ width: "220px", zIndex: 1000 }}
+                  style={{
+                    width: "220px",
+                    zIndex: 1000,
+
+                    left: window.innerWidth >= 768 ? "-180px" : "auto",
+
+                  }}
                 >
                   <p className="mb-1 fw-bold">{user.name}</p>
                   <p className="mb-1 small">{user.email}</p>
@@ -148,9 +211,12 @@ const Navbar = ({
           )}
 
           {/* CART */}
-          <button className="btn btn-secondary text-light">
-            Cart 🛒
-          </button>
+          {user && (
+            <button className="btn btn-secondary text-light">
+              Cart 🛒
+            </button>
+          )}
+
         </div>
       </div>
     </nav>

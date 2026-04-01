@@ -1,6 +1,8 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
+ 
 const Hero = ({ theme }) => {
+  const user = JSON.parse(localStorage.getItem("user"));
   return (
     <div
       className="d-flex align-items-center justify-content-center text-center"
@@ -36,18 +38,16 @@ const Hero = ({ theme }) => {
         <p className="text-secondary">
           Latest Gadgets at Best Prices
         </p>
+      
 
-        <button className={`btn me-2 ${
+      <Link
+        to={user ? "/product" : "/login"}
+        className={`btn ${
           theme === "dark" ? "btn-light" : "btn-dark"
-        }`}>
-          Shop Now
-        </button>
-
-        <button className={`btn ${
-          theme === "dark" ? "btn-outline-light" : "btn-outline-dark"
-        }`}>
-          Explore
-        </button>
+        }`}
+      >
+        Shop Now
+      </Link>
       </div>
     </div>
   );

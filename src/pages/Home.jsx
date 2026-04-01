@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
+
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import Categories from "../components/Categories";
@@ -20,6 +22,8 @@ const Home = () => {
     return savedTheme || "dark";
   });
 
+  const location = useLocation();
+
   useEffect(() => {
     localStorage.setItem("theme", theme);
   }, [theme]);
@@ -30,13 +34,36 @@ const Home = () => {
   const serviceRef = useRef(null);
   const contactRef = useRef(null);
 
-  // 🔥 SCROLL FUNCTION
+  // 🔥 NORMAL SCROLL (for same page)
   const scrollTo = (ref) => {
-    ref.current.scrollIntoView({
+    ref.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
   };
+
+  // 🔥 SPA ROUTE SCROLL (IMPORTANT)
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const section = location.state.scrollTo;
+
+      if (section === "products") {
+        productRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+
+      if (section === "services") {
+        serviceRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+
+      if (section === "about") {
+        aboutRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+
+      if (section === "contact") {
+        contactRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location]);
 
   return (
     <div
@@ -45,6 +72,7 @@ const Home = () => {
         minHeight: "100vh",
       }}
     >
+      {/* 🔥 NAVBAR */}
       <Navbar
         theme={theme}
         setTheme={setTheme}
@@ -53,28 +81,33 @@ const Home = () => {
         goServices={() => scrollTo(serviceRef)}
         goContact={() => scrollTo(contactRef)}
       />
-      
+
+      {/* 🔥 HERO */}
       <Hero theme={theme} scrollToProducts={() => scrollTo(productRef)} />
+
       <ProductShowcase theme={theme} />
       <Categories theme={theme} />
-
       <Offers theme={theme} />
 
-      <div>
+      {/* 🔥 PRODUCTS SECTION */}
+      <div ref={productRef}>
         <Products theme={theme} />
       </div>
 
       <Banner theme={theme} />
       <WhyUs theme={theme} />
 
+      {/* 🔥 ABOUT */}
       <div ref={aboutRef}>
         <About theme={theme} />
       </div>
 
+      {/* 🔥 SERVICES */}
       <div ref={serviceRef}>
         <Services theme={theme} />
       </div>
 
+      {/* 🔥 CONTACT */}
       <div ref={contactRef}>
         <Contact theme={theme} />
       </div>

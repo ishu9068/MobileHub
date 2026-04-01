@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Banner = ({ theme }) => {
   return (
@@ -15,7 +16,9 @@ const Banner = ({ theme }) => {
         <p className={theme === "dark" ? "text-light" : "text-dark"}>
           Check out new arrivals
         </p>
-        <button className="btn btn-primary">Explore Now</button>
+       <Link to="/product" className="btn btn-primary">
+          Explore Now
+        </Link>
       </div>
     </div>
   );

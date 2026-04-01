@@ -38,7 +38,7 @@ const Login = () => {
         } else if (data.user.role === "seller") {
           navigate("/SellerDashboard");
         } else {
-          navigate("/products"); 
+          navigate("/product"); 
         }
       }, 2000);
     } catch (error) {

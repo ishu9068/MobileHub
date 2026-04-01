@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const categoryList = [
   "Mobile Phones",
@@ -257,13 +258,13 @@ const Categories = ({ theme }) => {
                         "No description available"}
                     </p>
 
-                    <button className="btn btn-warning w-100 mb-2">
-                      Add to Cart
-                    </button>
+                    <Link to={`/product/${selectedProduct._id}`} className="btn btn-primary w-100 mb-2">
+                      View Details
+                    </Link>
 
-                    <button className="btn btn-success w-100">
+                    <Link to={`/product/${selectedProduct._id}`} className="btn btn-success w-100">
                       Buy Now
-                    </button>
+                    </Link>
                   </div>
 
                 </div>

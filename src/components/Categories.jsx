@@ -91,9 +91,9 @@ const Categories = ({ theme }) => {
                 <div className="row">
                   {filteredProducts.length > 0 ? (
                     filteredProducts.map((p) => (
-                      <div className="col-md-3 col-6 mb-3" key={p._id}>
+                      <div className="col-md-3 col-6 mb-3 " key={p._id}>
                         <div
-                          className={`p-2 rounded ${
+                          className={`p-2 rounded h-100 ${
                             theme === "dark"
                               ? "bg-secondary text-light"
                               : "bg-light border"

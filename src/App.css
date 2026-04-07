@@ -427,3 +427,8 @@ background-position: center;
 .zoom-container:hover .zoom-img {
   transform: scale(1.5);
 }
+
+
+.hero-section{
+        background-Image: url('../src/assets/home.jpg');
+}

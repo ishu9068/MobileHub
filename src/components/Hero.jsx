@@ -5,10 +5,9 @@ const Hero = ({ theme }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   return (
     <div
-      className="d-flex align-items-center justify-content-center text-center"
+      className="d-flex align-items-center justify-content-center text-center hero-section"
       style={{
         height: "100vh",
-        backgroundImage: "url('../../src/assets/home.jpg')", // yaha apna banner laga
         backgroundSize: "cover",
         backgroundPosition: "center",
         position: "relative",
